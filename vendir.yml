@@ -8,7 +8,7 @@ directories:
   - path: .
     git:
       url: https://github.com/kubernetes/ingress-nginx.git
-      ref: origin/main
+      ref: controller-v1.8.1
       depth: 1
     includePaths:
     - deploy/static/provider/kind/deploy.yaml

@@ -1,0 +1,11 @@
+apiVersion: vendir.k14s.io/v1alpha1
+directories:
+- contents:
+  - git:
+      commitTitle: release notes 1.8.1 (#10179)...
+      sha: ab99e23bba4404ab5fd036e15fb178014cca1a2f
+      tags:
+      - controller-v1.8.1
+    path: .
+  path: cluster-setup/nginx-ingress
+kind: LockConfig
