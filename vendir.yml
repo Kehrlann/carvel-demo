@@ -1,0 +1,14 @@
+---
+apiVersion: vendir.k14s.io/v1alpha1
+kind: Config
+directories:
+# nginx-ingress for local cluster env
+- path: cluster-setup/nginx-ingress
+  contents:
+  - path: .
+    git:
+      url: https://github.com/kubernetes/ingress-nginx.git
+      ref: origin/main
+      depth: 1
+    includePaths:
+    - deploy/static/provider/kind/deploy.yaml
