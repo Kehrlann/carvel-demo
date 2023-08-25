@@ -1,0 +1,123 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: oauth2-proxy
+  name: oauth2-proxy
+  namespace: default
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: oauth2-proxy
+  template:
+    metadata:
+      labels:
+        app: oauth2-proxy
+    spec:
+      containers:
+        - image: bitnami/oauth2-proxy:7.4.0
+          name: oauth2-proxy
+          imagePullPolicy: IfNotPresent
+          ports:
+            - containerPort: 8080
+              name: oauth2-proxy
+          args:
+            - --config
+            - /config/oauth2-proxy.cfg
+          volumeMounts:
+            - mountPath: /config
+              name: config
+            - mountPath: /var/www/static/bananas
+              name: bananas
+            - mountPath: /var/www/static/apples
+              name: apples
+      volumes:
+        - name: config
+          configMap:
+            name: oauth2-proxy-config
+        - name: bananas
+          configMap:
+            name: bananas
+        - name: apples
+          configMap:
+            name: apples
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: oauth2-proxy-config
+  namespace: default
+  annotations:
+    kapp.k14s.io/versioned: ""
+    kapp.k14s.io/versioned-keep-original: ""
+data:
+  oauth2-proxy.cfg: |
+    http_address="0.0.0.0:8080"
+    cookie_secret="6E1E8FEB-1E56-4A90-A33B-9538403B"
+    provider="oidc"
+    email_domains="example.com"
+    oidc_issuer_url="http://dex.127.0.0.1.nip.io"
+    client_secret="oauth2-proxy-secret"
+    client_id="oauth2-proxy"
+    cookie_secure="false"
+    redirect_url="http://oauth2-proxy.127.0.0.1.nip.io/oauth2/callback"
+    upstreams=["file:///var/www/static/bananas/#/bananas", "file:///var/www/static/apples/#/apples"]
+    skip_provider_button="true"
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: bananas
+  namespace: default
+data:
+  index.html: |
+    <body>
+      <h1>This is Bananas!</h1>
+      <p>Seriously, this is bananas.</p>
+    </body>
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: apples
+  namespace: default
+data:
+  index.html: |
+    <body>
+      <h1>An apple a day keeps the doctor away</h1>
+      <p>But only if you aim correctly and throw it really hard.</p>
+    </body>
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: oauth2-proxy
+  namespace: default
+spec:
+  type: ClusterIP
+  selector:
+    app: oauth2-proxy
+  ports:
+    - name: oauth2-proxy
+      port: 8080
+      targetPort: oauth2-proxy
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: oauth2-proxy
+  namespace: default
+spec:
+  rules:
+    - host: oauth2-proxy.127.0.0.1.nip.io
+      http:
+        paths:
+          - path: "/"
+            pathType: Prefix
+            backend:
+              service:
+                name: oauth2-proxy
+                port:
+                  name: oauth2-proxy
