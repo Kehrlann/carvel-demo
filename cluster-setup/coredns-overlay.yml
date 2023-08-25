@@ -1,0 +1,16 @@
+#@ load("@ytt:overlay","overlay")
+
+#@ def insert_rewrite_rule(current, _):
+#@    if "ingress-nginx-controller" in current:
+#@      return current
+#@    end
+#@    result = list(current.splitlines())
+#@    result.insert(-1, "    rewrite name regex (.*)\.127\.0\.0\.1\.nip\.io ingress-nginx-controller.ingress-nginx.svc.cluster.local")
+#@    return "\n".join(result)
+#@ end
+
+#@overlay/match by=overlay.all
+---
+data:
+  #@overlay/replace via=insert_rewrite_rule
+  Corefile:

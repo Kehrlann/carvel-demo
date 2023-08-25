@@ -60,3 +60,13 @@ else
   kapp deploy --app nginx-ingress --file "$SCRIPT_DIR/nginx-ingress/deploy/static/provider/kind/deploy.yaml" --yes
   echo "~~ Setting nginx ingress > done"
 fi
+
+echo "~~ Configuring CoreDNS for 127.0.0.1.nip.io"
+kubectl get configmap coredns \
+  --namespace kube-system \
+  --output yaml |
+    ytt \
+      --file - \
+      --file "$SCRIPT_DIR/coredns-overlay.yml" |
+    kubectl apply --filename -
+echo "~~ Configuring CoreDNS for 127.0.0.1.nip.io > done"
