@@ -29,20 +29,10 @@ spec:
           volumeMounts:
             - mountPath: /config
               name: config
-            - mountPath: /var/www/static/bananas
-              name: bananas
-            - mountPath: /var/www/static/apples
-              name: apples
       volumes:
         - name: config
           configMap:
             name: oauth2-proxy-config
-        - name: bananas
-          configMap:
-            name: bananas
-        - name: apples
-          configMap:
-            name: apples
 ---
 apiVersion: v1
 kind: ConfigMap
@@ -62,33 +52,9 @@ data:
     client_secret="oauth2-proxy-secret"
     client_id="oauth2-proxy"
     cookie_secure="false"
-    redirect_url="http://oauth2-proxy.127.0.0.1.nip.io/oauth2/callback"
-    upstreams=["file:///var/www/static/bananas/#/bananas", "file:///var/www/static/apples/#/apples"]
+    redirect_url="http://private.127.0.0.1.nip.io/oauth2/callback"
+    upstreams="static://202"
     skip_provider_button="true"
----
-apiVersion: v1
-kind: ConfigMap
-metadata:
-  name: bananas
-  namespace: default
-data:
-  index.html: |
-    <body>
-      <h1>This is Bananas!</h1>
-      <p>Seriously, this is bananas.</p>
-    </body>
----
-apiVersion: v1
-kind: ConfigMap
-metadata:
-  name: apples
-  namespace: default
-data:
-  index.html: |
-    <body>
-      <h1>An apple a day keeps the doctor away</h1>
-      <p>But only if you aim correctly and throw it really hard.</p>
-    </body>
 ---
 apiVersion: v1
 kind: Service
@@ -111,7 +77,7 @@ metadata:
   namespace: default
 spec:
   rules:
-    - host: oauth2-proxy.127.0.0.1.nip.io
+    - host: private.127.0.0.1.nip.io
       http:
         paths:
           - path: "/"
