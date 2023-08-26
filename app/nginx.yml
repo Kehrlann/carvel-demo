@@ -82,5 +82,8 @@ spec:
               name: #@ app_name
 #@ end
 
-#@ for/end app in data.values.apps:
+#@ for app in data.values.apps:
+#@ if app.public:
 --- #@ template.replace(app_resources(app.name, app.html))
+#@ end
+#@ end
