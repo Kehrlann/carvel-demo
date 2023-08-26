@@ -1,81 +1,90 @@
+#@ load("@ytt:template", "template")
+
+#@ def app_resources(app_name, app_html):
 ---
 apiVersion: apps/v1
 kind: Deployment
 metadata:
   labels:
-    app: nginx
-  name: nginx
+    app: #@ app_name
+  name: #@ app_name
   namespace: default
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: nginx
+      app: #@ app_name
   template:
     metadata:
       labels:
-        app: nginx
+        app: #@ app_name
     spec:
       containers:
-        - image: bitnami/nginx:1.25.2 # 1.24.0
-          name: nginx
-          imagePullPolicy: IfNotPresent
-          ports:
-            - containerPort: 8080
-              name: nginx
-          volumeMounts:
-            - mountPath: /app/strawberries
-              name: strawberries
+      - image: bitnami/nginx:1.25.2
+        name: nginx
+        imagePullPolicy: IfNotPresent
+        ports:
+        - containerPort: 8080
+          name: #@ app_name
+        resources:
+          limits:
+            memory: 20M
+        volumeMounts:
+        - mountPath: /app
+          name: app-data
       volumes:
-        - name: strawberries
-          configMap:
-            name: strawberries
+      - name: app-data
+        configMap:
+          name: strawberries
 ---
 apiVersion: v1
 kind: ConfigMap
 metadata:
-  name: strawberries
+  name: #@ app_name
   namespace: default
   annotations:
     kapp.k14s.io/versioned: ""
     kapp.k14s.io/versioned-keep-original: ""
 data:
-  index.html: |
-    <body>
-      <h1>Strawberries playing music together</h1>
-      <p>They're jamming!</p>
-    </body>
-
+  index.html: #@ app_html
 ---
 apiVersion: v1
 kind: Service
 metadata:
-  name: nginx
+  name: #@ app_name
   namespace: default
 spec:
   type: ClusterIP
   selector:
-    app: nginx
+    app: #@ app_name
   ports:
-    - name: nginx
-      port: 8080
-      targetPort: nginx
+  - name: #@ app_name
+    port: 8080
+    targetPort: #@ app_name
 ---
 apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
-  name: nginx
+  name: #@ app_name
   namespace: default
 spec:
   rules:
-    - host: nginx.127.0.0.1.nip.io
-      http:
-        paths:
-          - path: "/"
-            pathType: Prefix
-            backend:
-              service:
-                name: nginx
-                port:
-                  name: nginx
+  - host: #@ app_name + ".127.0.0.1.nip.io"
+    http:
+      paths:
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: #@ app_name
+            port:
+              name: #@ app_name
+#@ end
 
+#@ strawberries_content = """
+#@    <body>
+#@      <h1>Strawberries playing music together</h1>
+#@      <p>They're jamming!</p>
+#@    </body>
+#@ """
+--- #@ template.replace(app_resources("strawberries", strawberries_content))
