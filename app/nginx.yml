@@ -1,4 +1,5 @@
 #@ load("@ytt:template", "template")
+#@ load("@ytt:data", "data")
 
 #@ def app_resources(app_name, app_html):
 ---
@@ -81,10 +82,5 @@ spec:
               name: #@ app_name
 #@ end
 
-#@ strawberries_content = """
-#@    <body>
-#@      <h1>Strawberries playing music together</h1>
-#@      <p>They're jamming!</p>
-#@    </body>
-#@ """
---- #@ template.replace(app_resources("strawberries", strawberries_content))
+#@ for/end app in data.values.apps:
+--- #@ template.replace(app_resources(app.name, app.html))
