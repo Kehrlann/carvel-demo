@@ -1,0 +1,81 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: nginx
+  name: nginx
+  namespace: default
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: nginx
+  template:
+    metadata:
+      labels:
+        app: nginx
+    spec:
+      containers:
+        - image: bitnami/nginx:1.25.2 # 1.24.0
+          name: nginx
+          imagePullPolicy: IfNotPresent
+          ports:
+            - containerPort: 8080
+              name: nginx
+          volumeMounts:
+            - mountPath: /app/strawberries
+              name: strawberries
+      volumes:
+        - name: strawberries
+          configMap:
+            name: strawberries
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: strawberries
+  namespace: default
+  annotations:
+    kapp.k14s.io/versioned: ""
+    kapp.k14s.io/versioned-keep-original: ""
+data:
+  index.html: |
+    <body>
+      <h1>Strawberries playing music together</h1>
+      <p>They're jamming!</p>
+    </body>
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: nginx
+  namespace: default
+spec:
+  type: ClusterIP
+  selector:
+    app: nginx
+  ports:
+    - name: nginx
+      port: 8080
+      targetPort: nginx
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: nginx
+  namespace: default
+spec:
+  rules:
+    - host: nginx.127.0.0.1.nip.io
+      http:
+        paths:
+          - path: "/"
+            pathType: Prefix
+            backend:
+              service:
+                name: nginx
+                port:
+                  name: nginx
+
