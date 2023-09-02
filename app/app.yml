@@ -50,7 +50,7 @@ spec:
       volumes:
       - name: app-data
         configMap:
-          name: strawberries
+          name: #@ app_name
 ---
 apiVersion: v1
 kind: Service
