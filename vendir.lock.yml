@@ -7,11 +7,11 @@ directories:
       tags:
       - controller-v1.8.1
     path: .
-  path: cluster-setup/nginx-ingress
+  path: demo/cluster-setup/nginx-ingress
 - contents:
   - githubRelease:
       tag: v0.47.0
       url: https://api.github.com/repos/carvel-dev/kapp-controller/releases/118513985
     path: .
-  path: cluster-setup/kapp-controller
+  path: demo/cluster-setup/kapp-controller
 kind: LockConfig
