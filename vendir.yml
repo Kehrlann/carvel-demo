@@ -12,3 +12,10 @@ directories:
       depth: 1
     includePaths:
     - deploy/static/provider/kind/deploy.yaml
+- path: cluster-setup/kapp-controller
+  contents:
+  - path: .
+    githubRelease:
+      slug: carvel-dev/kapp-controller
+      tag: v0.47.0
+      assetNames: ["release.yml"]

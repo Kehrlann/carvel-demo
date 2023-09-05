@@ -61,6 +61,16 @@ else
   echo "~~ Setting nginx ingress > done"
 fi
 
+echo "~~ Setting kapp-controller"
+if kapp inspect --app kapp-controller >/dev/null; then
+  echo "~~ Setting kapp controller > already installed, skipping"
+else
+  cd "$SCRIPT_DIR/.."
+  vendir sync --locked
+  kapp deploy --app kapp-controller --file "$SCRIPT_DIR/kapp-controller/release.yml" --yes
+  echo "~~ Setting kapp controller > done"
+fi
+
 echo "~~ Configuring CoreDNS for 127.0.0.1.nip.io"
 kubectl get configmap coredns \
   --namespace kube-system \
