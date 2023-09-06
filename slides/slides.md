@@ -9,9 +9,16 @@ paging: Slide %d / %d
 
 ## Deploy apps on Kubernetes following the Unix Philosophy
 
-Daniel Garnier-Moiroux
+🍃 Daniel Garnier-Moiroux, Engineer @ VMware
 
-Swiss Cloud Native Day, 2023-09-21
+🗻🇨🇭 Swiss Cloud Native Day, 2023-09-21
+
+---
+# Disclaimer 📄
+
+🔭 This is an overview, very partial
+
+🧑‍💻I'm more of a "Developer", not much of an "Operator"
 
 ---
 # The plan
@@ -20,12 +27,12 @@ Swiss Cloud Native Day, 2023-09-21
 1. Build and deploy a simple application
 1. Modify an existing app
 1. Make it prod-ready and publish it
-1. Package it all up as an "application"
+1. GitOps and Package Management
 
 ---
 # What's carvel?
 
-CNCF **Sandbox** project
+🏖️ CNCF **Sandbox** project
 
 > Carvel provides a set of reliable, single-purpose, composable tools that aid in your application
 > building, configuration, and deployment to Kubernetes.
@@ -48,7 +55,7 @@ open https://carvel.dev/
 1. **Build and deploy a simple application**
 1. Modify an existing app
 1. Make it prod-ready and publish it
-1. Package it all up as an "application"
+1. GitOps and Package Management
 
 ---
 # Build and deploy an app: ytt and kapp
@@ -57,7 +64,7 @@ open https://carvel.dev/
 
 YAML-aware, equivalent to Helm & Kustomize
 
-Control flow (for, if), functions, data values, overlays
+**Control flow (for, if), functions, data values**, _overlays_
 
 <span></span>
 
@@ -65,7 +72,7 @@ Control flow (for, if), functions, data values, overlays
 
 Client-side + ConfigMap, equivalent to kubectl
 
-Group resources, wait rules, config versioning
+**Group resources**, _wait rules_, **config versioning**
 
 ---
 # The plan
@@ -74,27 +81,29 @@ Group resources, wait rules, config versioning
 1. Build and deploy a simple application
 1. **Modify an existing app**
 1. Make it prod-ready and publish it
-1. Package it all up as an "application"
+1. GitOps and Package Management
 
 ---
-# The plan
+# Modify an existing app: ytt and kapp
 
-1. What's Carvel?
-1. Build and deploy a simple application
-1. Modify an existing app
-1. **Make it prod-ready and publish it**
-1. Package it all up as an "application"
+### ytt: YAML templating tool
+
+YAML-aware, equivalent to Helm & Kustomize
+
+_Control flow (for, if), functions, data values_, **overlays**
+
+<span></span>
+
+### kapp: "app"-aware replacement for kubectl
+
+Client-side + ConfigMap, equivalent to kubectl
+
+_Group resources_, **wait rules**, _config versioning_
 
 ---
-# ytt
+# Note: YTT playground
 
-## ytt is back!
-
-⏩ Demo
-
-Overlays, modifying existing documents
-
-⏩ Interactive playground: https://carvel.dev/ytt/
+⏩ https://carvel.dev/ytt/
 
 <span style="conceal">
 ```bash
@@ -103,6 +112,39 @@ open https://carvel.dev/ytt/
 </span>
 
 ---
-# kbld
+# The plan
 
-## ytt is back!
+1. What's Carvel?
+1. Build and deploy a simple application
+1. Modify an existing app
+1. **Make it prod-ready and publish it**
+1. GitOps and Package Management
+
+---
+# Prod-readioness and publication: kbld and imgpkg
+
+### kbld
+
+kbld
+
+<span></span>
+
+### imgpkg
+
+imgpkg
+
+---
+# The plan
+
+1. What's Carvel?
+1. Build and deploy a simple application
+1. Modify an existing app
+1. Make it prod-ready and publish it
+1. **GitOps and Package Management**
+
+---
+# GitOps and Package Management: kapp-controller
+
+### kapp-controller
+
+kctrl
