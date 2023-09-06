@@ -1,6 +1,0 @@
-#@data/values-schema
----
-apps:
-  - name: ""
-    html: ""
-    public: true
