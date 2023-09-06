@@ -11,22 +11,24 @@ spec:
   fetch:
     - imgpkgBundle:
         image: docker.io/dgarnier963/carvel-demo:temp
+      path: bundle
 
-          #- git:
-          #    url: https://github.com/k14s/k8s-simple-app-example
-          #    ref: origin/develop
-          #    subPath: config-step-2-template
+    - git:
+        url: https://github.com/Kehrlann/carvel-demo.git
+        ref: gitops
+      path: git
 
   template:
     # use ytt to template configuration
     - ytt:
         paths:
-        - app/
-        - app-private/
-        - infra/
+        - bundle/app/
+        - bundle/app-private/
+        - bundle/infra/
         valuesFrom:
-          - secretRef:
-              name: app-configuration
+          #- secretRef:
+          #    name: app-configuration
+          - path: git/my-custom-values.yml
 
 
     # use kbld to resolve image references to use digests
@@ -34,7 +36,7 @@ spec:
         # lists paths to use explicitly (optional; v0.13.0+)
         # - must be quoted when included with paths
         paths:
-        - .imgpkg/images.yml
+        - bundle/.imgpkg/images.yml
         - "-"
 
   deploy:
