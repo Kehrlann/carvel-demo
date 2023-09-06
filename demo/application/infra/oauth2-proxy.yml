@@ -6,6 +6,9 @@ metadata:
     app: oauth2-proxy
   name: oauth2-proxy
   namespace: default
+  annotations:
+    kapp.k14s.io/change-group: oauth2-proxy
+    kapp.k14s.io/change-rule: "upsert after upserting dex"
 spec:
   replicas: 1
   selector:
@@ -42,6 +45,7 @@ metadata:
   annotations:
     kapp.k14s.io/versioned: ""
     kapp.k14s.io/versioned-keep-original: ""
+    kapp.k14s.io/change-group: oauth2-proxy
 data:
   oauth2-proxy.cfg: |
     http_address="0.0.0.0:8080"
@@ -61,6 +65,8 @@ kind: Service
 metadata:
   name: oauth2-proxy
   namespace: default
+  annotations:
+    kapp.k14s.io/change-group: oauth2-proxy
 spec:
   type: ClusterIP
   selector:
@@ -75,6 +81,8 @@ kind: Ingress
 metadata:
   name: oauth2-proxy
   namespace: default
+  annotations:
+    kapp.k14s.io/change-group: oauth2-proxy
 spec:
   rules:
     - host: private.127.0.0.1.nip.io
