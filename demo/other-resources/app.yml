@@ -7,10 +7,17 @@ metadata:
 
 spec:
   serviceAccountName: kapp-controller-sa
-  syncPeriod: 30s
+  syncPeriod: 1m
   fetch:
-    - imgpkgBundle:
-        image: docker.io/dgarnier963/carvel-demo:temp
+    # Watch out: pulling the bundle may hit DockerHub rate limits
+    #- imgpkgBundle:
+    #    image: docker.io/dgarnier963/carvel-demo:temp
+    #  path: bundle
+
+    - git:
+        url: https://github.com/Kehrlann/carvel-demo.git
+        ref: main
+        subPath: demo/application
       path: bundle
 
     - git:
@@ -22,9 +29,9 @@ spec:
     # use ytt to template configuration
     - ytt:
         paths:
-        - bundle/app/
-        - bundle/app-private/
-        - bundle/infra/
+          - bundle/app/
+          - bundle/app-private/
+          - bundle/infra/
         valuesFrom:
           #- secretRef:
           #    name: app-configuration
