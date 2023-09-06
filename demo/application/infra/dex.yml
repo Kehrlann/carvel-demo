@@ -6,6 +6,8 @@ metadata:
     app: dex
   name: dex
   namespace: default
+  annotations:
+    kapp.k14s.io/change-group: dex
 spec:
   replicas: 1
   selector:
@@ -49,6 +51,7 @@ metadata:
   annotations:
     kapp.k14s.io/versioned: ""
     kapp.k14s.io/versioned-keep-original: ""
+    kapp.k14s.io/change-group: dex
 data:
   dex-config.yml: |
     issuer: http://dex.127.0.0.1.nip.io
@@ -82,6 +85,8 @@ kind: Service
 metadata:
   name: dex
   namespace: default
+  annotations:
+    kapp.k14s.io/change-group: dex
 spec:
   type: ClusterIP
   selector:
@@ -96,6 +101,8 @@ kind: Ingress
 metadata:
   name: dex
   namespace: default
+  annotations:
+    kapp.k14s.io/change-group: dex
 spec:
   rules:
     - host: dex.127.0.0.1.nip.io
