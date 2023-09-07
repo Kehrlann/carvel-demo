@@ -1,0 +1,47 @@
+apiVersion: data.packaging.carvel.dev/v1alpha1
+kind: Package
+metadata:
+  creationTimestamp: null
+  name: carvel-demo.garnier.wf.1.0.0
+spec:
+  refName: carvel-demo.garnier.wf
+  releasedAt: "2023-09-07T22:27:54Z"
+  template:
+    spec:
+      deploy:
+      - kapp: {}
+      fetch:
+      - imgpkgBundle:
+          image: index.docker.io/dgarnier963/carvel-demo@sha256:864ee32516e966ba253d18e6ff04d34d49bba7ec13a72acc9eca65af3b85e76b
+      template:
+      - ytt:
+          paths:
+          - app
+          - app-private
+          - infra
+      - kbld:
+          paths:
+          - '-'
+          - .imgpkg/images.yml
+  valuesSchema:
+    openAPIv3:
+      additionalProperties: false
+      properties:
+        apps:
+          default: []
+          items:
+            additionalProperties: false
+            properties:
+              html:
+                default: ""
+                type: string
+              name:
+                default: ""
+                type: string
+              public:
+                default: true
+                type: boolean
+            type: object
+          type: array
+      type: object
+  version: 1.0.0

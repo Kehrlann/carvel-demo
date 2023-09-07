@@ -1,0 +1,15 @@
+apiVersion: packaging.carvel.dev/v1alpha1
+kind: PackageRepository
+metadata:
+  annotations:
+    kctrl.carvel.dev/repository-version: 1.0.0
+  creationTimestamp: "2023-09-07T22:28:20Z"
+  name: carvel-demo.garnier.wf
+spec:
+  fetch:
+    imgpkgBundle:
+      image: index.docker.io/dgarnier963/carvel-demo-repository@sha256:cd7309e67bb91470fb38ad7cf3657979ec63edfb8951c3ac1729b88a0240c430
+status:
+  conditions: null
+  friendlyDescription: ""
+  observedGeneration: 0
