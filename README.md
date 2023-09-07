@@ -142,7 +142,13 @@ imgpkg copy - tarball:
 imgpkg copy --bundle docker.io/dgarnier963/carvel-demo:temp --to-tar ~/tmp/carvel-demo
 ```
 
+kctrl
 
+```
+kctrl package available list
+kctrl package available get -p carvel-demo.garnier.wf/1.0.0 --values-schema
+kctrl package install -i demo -p carvel-demo.garnier.wf -v 1.0.0 -n default  --dangerous-allow-use-of-shared-namespace --values-file other-resources/my-custom-values.yml
+```
 
 ## TODO
 
