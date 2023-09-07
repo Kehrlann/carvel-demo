@@ -14,11 +14,19 @@ paging: Slide %d / %d
 🗻🇨🇭 Swiss Cloud Native Day, 2023-09-21
 
 ---
-# Disclaimer 📄
+# Daniel Garnier-Moiroux
 
-🔭 This is an overview, very partial
+Software Engineer @ VMware
 
-🧑‍💻I'm more of a "Developer", not much of an "Operator"
+- 🍃 Spring
+- 🚢 Tanzu Application Platform
+
+
+Find me online!
+
+- 🌍 `https://garnier.wf/`
+- 🐦 @Kehrlann
+- 📩 `dgarnier@vmware.com`
 
 ---
 # The plan
@@ -28,6 +36,13 @@ paging: Slide %d / %d
 1. Modify an existing app
 1. Make it prod-ready and publish it
 1. GitOps and Package Management
+
+---
+# Disclaimer 📄
+
+🔭 This is an overview, very partial
+
+🧑‍💻I'm more of a "Developer", not much of an "Operator"
 
 ---
 # What's carvel?
@@ -64,15 +79,23 @@ open https://carvel.dev/
 
 YAML-aware, equivalent to Helm & Kustomize
 
-**Control flow (for, if), functions, data values**, _overlays_
+- **Control flow (for, if)**
+- **Functions**
+- **Data values**
+- _Overlays_
+- ...
 
-<span></span>
+---
+# Build and deploy an app: ytt and kapp
 
 ### kapp: "app"-aware replacement for kubectl
 
 Client-side + ConfigMap, equivalent to kubectl
 
-**Group resources**, _wait rules_, **config versioning**
+- **Group resources**
+- _Wait rules_
+- **ConfigMap and Secret versioning**
+- ...
 
 ---
 # The plan
@@ -90,22 +113,30 @@ Client-side + ConfigMap, equivalent to kubectl
 
 YAML-aware, equivalent to Helm & Kustomize
 
-_Control flow (for, if), functions, data values_, **overlays**
+- _Control flow (for, if)_
+- _Functions_
+- _Data values_
+- **Overlays**
+- ...
 
-<span></span>
+---
+# Modify an existing app: ytt and kapp
 
 ### kapp: "app"-aware replacement for kubectl
 
 Client-side + ConfigMap, equivalent to kubectl
 
-_Group resources_, **wait rules**, _config versioning_
+- _Group resources_
+- **Wait rules**
+- _ConfigMap and Secret versioning_
+- ...
 
 ---
 # Note: YTT playground
 
 ⏩ https://carvel.dev/ytt/
 
-<span style="conceal">
+<span style=conceal>
 ```bash
 open https://carvel.dev/ytt/
 ```
