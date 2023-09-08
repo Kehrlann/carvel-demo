@@ -3,7 +3,7 @@ apps:
   - name: "strawberries"
     html: |
       <body>
-        <h1>Strawberries playing music together</h1>
+        <h1>J'aime les fraises</h1>
         <p>They're jamming!</p>
       </body>
     public: true
@@ -14,7 +14,7 @@ apps:
         <p>Seriously, this is bananas.</p>
       </body>
     public: false
-  - name: "apples"
+  - name: "apfeln"
     html: |
       <body>
         <h1>An apple a day keeps the doctor away</h1>
