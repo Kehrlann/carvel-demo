@@ -1,9 +1,0 @@
-apiVersion: kctrl.carvel.dev/v1alpha1
-kind: PackageRepositoryBuild
-metadata:
-  creationTimestamp: "2023-09-08T07:54:56Z"
-  name: carvel-demo.garnier.wf
-spec:
-  export:
-    imgpkgBundle:
-      image: docker.io/dgarnier963/carvel-demo-repository
