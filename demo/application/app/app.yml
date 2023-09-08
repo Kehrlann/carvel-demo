@@ -8,6 +8,9 @@ kind: ConfigMap
 metadata:
   name: #@ app_name
   namespace: default
+  annotations:
+    kapp.k14s.io/versioned: ""
+    kapp.k14s.io/versioned-keep-original: ""
 data:
   index.html: #@ app_html
 #@ end

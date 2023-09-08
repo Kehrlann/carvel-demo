@@ -7,7 +7,7 @@ apps:
           <meta charset="utf-8"/>
         </head>
         <body>
-          <h1>Strawberries playing music together</h1>
+          <h1>🍓 Strawberries playing music together</h1>
           <p>They're jamming!</p>
         </body>
       </html>
@@ -19,7 +19,7 @@ apps:
           <meta charset="utf-8"/>
         </head>
         <body>
-          <h1>This is Bananas!</h1>
+          <h1>🍌 This is Bananas!</h1>
           <p>Seriously, this is bananas.</p>
         </body>
       </html>
@@ -31,7 +31,7 @@ apps:
           <meta charset="utf-8"/>
         </head>
         <body>
-          <h1>An apple a day keeps the doctor away</h1>
+          <h1>🍏 An apple a day keeps the doctor away</h1>
           <p>But only if you aim correctly and throw it really hard.</p>
         </body>
       </html>
