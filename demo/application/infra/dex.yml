@@ -1,0 +1,122 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: dex
+  name: dex
+  namespace: default
+  annotations:
+    kapp.k14s.io/change-group: dex
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: dex
+  template:
+    metadata:
+      labels:
+        app: dex
+    spec:
+      containers:
+        - image: bitnami/dex:2.37.0
+          name: dex
+          imagePullPolicy: IfNotPresent
+          ports:
+            - containerPort: 8080
+              name: dex
+          command:
+            - dex
+          args:
+            - serve
+            - /config/dex-config.yml
+          volumeMounts:
+            - mountPath: /config
+              name: config
+            - mountPath: /db
+              name: db
+          livenessProbe:
+            httpGet:
+              path: /.well-known/openid-configuration
+              port: 8080
+      volumes:
+        - name: config
+          configMap:
+            name: dex-config
+        #! emptyDir volume to create the sqlite db in
+        - name: db
+          emptyDir: {}
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: dex-config
+  namespace: default
+  annotations:
+    kapp.k14s.io/versioned: ""
+    kapp.k14s.io/versioned-keep-original: ""
+    kapp.k14s.io/change-group: dex
+data:
+  dex-config.yml: |
+    issuer: http://dex.127.0.0.1.nip.io
+    storage:
+      type: sqlite3
+      config:
+        file: /db/dex.db
+    web:
+      http: 0.0.0.0:8080
+    oauth2:
+      skipApprovalScreen: true
+    expiry:
+      signingKeys: "4h"
+      idTokens: "1h"
+    staticClients:
+    - id: oauth2-proxy
+      redirectURIs:
+      - 'http://private.127.0.0.1.nip.io/oauth2/callback' # For basic proxy example.
+      name: 'OAuth2 Proxy'
+      secret: oauth2-proxy-secret
+    enablePasswordDB: true
+    staticPasswords:
+    - email: "admin@example.com"
+      #! bcrypt hash of the string "password"
+      hash: "$2a$10$2b2cU8CPhOTaGrs1HRQuAueS7JTT5ZHsHSzYiFPm1leZck7Mc8T4W"
+      username: "admin"
+      userID: "EAFB0F36-64F0-4151-B70C-04CA4A6A3775"
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: dex
+  namespace: default
+  annotations:
+    kapp.k14s.io/change-group: dex
+spec:
+  type: ClusterIP
+  selector:
+    app: dex
+  ports:
+    - name: dex
+      port: 8080
+      targetPort: dex
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: dex
+  namespace: default
+  annotations:
+    kapp.k14s.io/change-group: dex
+spec:
+  rules:
+    - host: dex.127.0.0.1.nip.io
+      http:
+        paths:
+          - path: "/"
+            pathType: Prefix
+            backend:
+              service:
+                name: dex
+                port:
+                  name: dex
+

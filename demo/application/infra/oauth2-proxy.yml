@@ -1,0 +1,96 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: oauth2-proxy
+  name: oauth2-proxy
+  namespace: default
+  annotations:
+    kapp.k14s.io/change-group: oauth2-proxy
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: oauth2-proxy
+  template:
+    metadata:
+      labels:
+        app: oauth2-proxy
+    spec:
+      containers:
+        - image: bitnami/oauth2-proxy:7.4.0
+          name: oauth2-proxy
+          imagePullPolicy: IfNotPresent
+          ports:
+            - containerPort: 8080
+              name: oauth2-proxy
+          args:
+            - --config
+            - /config/oauth2-proxy.cfg
+          volumeMounts:
+            - mountPath: /config
+              name: config
+      volumes:
+        - name: config
+          configMap:
+            name: oauth2-proxy-config
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: oauth2-proxy-config
+  namespace: default
+  annotations:
+    kapp.k14s.io/versioned: ""
+    kapp.k14s.io/versioned-keep-original: ""
+    kapp.k14s.io/change-group: oauth2-proxy
+data:
+  oauth2-proxy.cfg: |
+    http_address="0.0.0.0:8080"
+    cookie_secret="6E1E8FEB-1E56-4A90-A33B-9538403B"
+    provider="oidc"
+    email_domains="example.com"
+    oidc_issuer_url="http://dex.127.0.0.1.nip.io"
+    client_secret="oauth2-proxy-secret"
+    client_id="oauth2-proxy"
+    cookie_secure="false"
+    redirect_url="http://private.127.0.0.1.nip.io/oauth2/callback"
+    upstreams="static://202"
+    skip_provider_button="true"
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: oauth2-proxy
+  namespace: default
+  annotations:
+    kapp.k14s.io/change-group: oauth2-proxy
+spec:
+  type: ClusterIP
+  selector:
+    app: oauth2-proxy
+  ports:
+    - name: oauth2-proxy
+      port: 8080
+      targetPort: oauth2-proxy
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: oauth2-proxy
+  namespace: default
+  annotations:
+    kapp.k14s.io/change-group: oauth2-proxy
+spec:
+  rules:
+    - host: private.127.0.0.1.nip.io
+      http:
+        paths:
+          - path: "/"
+            pathType: Prefix
+            backend:
+              service:
+                name: oauth2-proxy
+                port:
+                  name: oauth2-proxy
