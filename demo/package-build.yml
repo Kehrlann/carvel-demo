@@ -15,15 +15,11 @@ spec:
           template:
           - ytt:
               paths:
-              - app
-              - app-private
-              - infra
+              - application
           - kbld: {}
       export:
       - imgpkgBundle:
-          image: docker.io/dgarnier963/carvel-demo
+          image: docker.io/dgarnier963/carvel-demo-package
           useKbldImagesLock: true
         includePaths:
-        - app
-        - app-private
-        - infra
+        - application

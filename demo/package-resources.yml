@@ -15,9 +15,7 @@ spec:
       template:
       - ytt:
           paths:
-          - app
-          - app-private
-          - infra
+          - application
       - kbld: {}
   valuesSchema:
     openAPIv3: null
