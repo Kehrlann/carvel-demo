@@ -5,20 +5,18 @@ metadata:
   name: carvel-demo.garnier.wf.1.0.0
 spec:
   refName: carvel-demo.garnier.wf
-  releasedAt: "2023-09-07T22:27:54Z"
+  releasedAt: "2023-09-08T07:54:35Z"
   template:
     spec:
       deploy:
       - kapp: {}
       fetch:
       - imgpkgBundle:
-          image: index.docker.io/dgarnier963/carvel-demo@sha256:864ee32516e966ba253d18e6ff04d34d49bba7ec13a72acc9eca65af3b85e76b
+          image: index.docker.io/dgarnier963/carvel-demo-package@sha256:5456f91d4cd652305b19e381e609f79919f98da8eb8acfef2614466e9b78371f
       template:
       - ytt:
           paths:
-          - app
-          - app-private
-          - infra
+          - application
       - kbld:
           paths:
           - '-'
