@@ -1,9 +1,0 @@
-apiVersion: data.packaging.carvel.dev/v1alpha1
-kind: PackageMetadata
-metadata:
-  creationTimestamp: null
-  name: carvel-demo.garnier.wf
-spec:
-  displayName: carvel-demo
-  longDescription: carvel-demo.garnier.wf
-  shortDescription: carvel-demo.garnier.wf
