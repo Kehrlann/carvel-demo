@@ -8,6 +8,7 @@ metadata:
   namespace: default
   annotations:
     kapp.k14s.io/change-group: oauth2-proxy
+    kapp.k14s.io/change-rule: "upsert after upserting dex"
 spec:
   replicas: 1
   selector:
