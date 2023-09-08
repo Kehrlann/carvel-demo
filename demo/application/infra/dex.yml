@@ -35,6 +35,10 @@ spec:
               name: config
             - mountPath: /db
               name: db
+          livenessProbe:
+            httpGet:
+              path: /.well-known/openid-configuration
+              port: 8080
       volumes:
         - name: config
           configMap:
