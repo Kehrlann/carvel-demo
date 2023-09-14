@@ -57,6 +57,124 @@ What about using countries instead? Simple website with a page per country. But 
 - Use-case 3: kapp-controller
   - if time allows
 
+## Demo
+
+1. YTT templating
+  1. For loop
+  2. Function
+  3. Data-values
+  4. Data-values file
+
+```yaml
+#@ load("@ytt:data", "data")
+
+#@ def config_map(name, content):
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: #@ name
+  namespace: default
+data:
+  index.html: #@ content #@ end
+
+#@ for app in data.values.apps:
+--- #@ config_map(app.name, app.html)
+#@ end
+```
+
+2. kapp deploy - Versioned resources
+
+```yaml
+  annotations:
+    kapp.k14s.io/versioned: ""
+    kapp.k14s.io/versioned-keep-original: ""
+```
+
+3. kapp deploy - wait-rule
+  1. Show app
+  2. Apply wait rule
+
+```yaml
+  annotations:
+    kapp.k14s.io/change-group: oauth2-proxy
+    kapp.k14s.io/change-rule: "upsert after upserting dex"
+```
+
+4. YTT: overlay
+  1. Overlay app
+  2. Overlay CoreDNS configuration
+
+```yaml
+#@ load("@ytt:overlay", "overlay")
+
+#@overlay/match by=overlay.all
+---
+metadata:
+  #@overlay/match missing_ok=True
+  annotations:
+    #@overlay/match missing_ok=True
+    added: true
+
+#@overlay/match by=overlay.subset({"kind": "ConfigMap"}), expects="1+"
+---
+metadata:
+  namespace: changed-by-overlay
+```
+
+5. kbld
+  1. raw
+  2. with --imgpkg-lock-file
+
+```bash
+# resolve
+ytt --file application/infra --file app-private/oauth2-proxy-overlay.yml --data-values-file other-resources/my-custom-values.yml |
+  kbld -f - --imgpkg-lock-output application/.imgpkg/images.yml
+# pre-resolved
+ytt --file application/infra --file app-private/oauth2-proxy-overlay.yml --data-values-file other-resources/my-custom-values.yml |
+  kbld -f - --file application/.imgpkg/images.yml
+```
+
+6. imgpkg
+  1. push/pull
+  2. copy
+
+imgpkg push/pull:
+
+```bash
+imgpkg push --bundle docker.io/dgarnier963/carvel-demo:temp --file application/
+rm -rf ~/tmp/carvel-demo/*
+imgpkg pull --bundle docker.io/dgarnier963/carvel-demo:temp --output ~/tmp/carvel-demo
+```
+
+imgpkg copy:
+
+```bash
+# push it
+imgpkg copy --bundle docker.io/dgarnier963/carvel-demo:temp --to-repo gcr.io/cf-identity-service-oak/dgarnier/carvel-demo
+open https://console.cloud.google.com/gcr/images/cf-identity-service-oak/global/dgarnier/carvel-demo?project=cf-identity-service-oak
+
+# pull it
+rm -rf ~/tmp/carvel-demo-bundle/*
+imgpkg pull --bundle gcr.io/cf-identity-service-oak/dgarnier/carvel-demo:temp --output
+~/tmp/carvel-bundle
+```
+
+imgpkg copy - tarball:
+
+```bash
+imgpkg copy --bundle docker.io/dgarnier963/carvel-demo:temp --to-tar ~/tmp/carvel-demo
+```
+
+7. kapp-controller
+  1. App crd
+  2. package install
+
+```
+kctrl package available list
+kctrl package available get -p carvel-demo.garnier.wf/1.0.0 --values-schema
+kctrl package install -i demo -p carvel-demo.garnier.wf -v 1.0.0 -n default  --dangerous-allow-use-of-shared-namespace --values-file other-resources/my-custom-values.yml
+```
+
 ## Commands
 
 Setup:
