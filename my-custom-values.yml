@@ -3,7 +3,7 @@ apps:
   - name: "strawberries"
     html: |
       <body>
-        <h1>J'aime les fraises</h1>
+        <h1>J'aime beaucoup les fraises</h1>
         <p>They're jamming!</p>
       </body>
     public: true
