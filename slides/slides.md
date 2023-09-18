@@ -28,6 +28,14 @@ Find me online!
 - 🐦 @Kehrlann
 - 📩 `dgarnier@vmware.com`
 
+
+---
+# Disclaimer 📄
+
+🔭 This is an overview, very partial
+
+🧑‍💻I'm more of a "Developer", not much of an "Operator"
+
 ---
 # The plan
 
@@ -38,19 +46,11 @@ Find me online!
 1. GitOps and Package Management
 
 ---
-# Disclaimer 📄
-
-🔭 This is an overview, very partial
-
-🧑‍💻I'm more of a "Developer", not much of an "Operator"
-
----
 # What's carvel?
 
 🏖️ CNCF **Sandbox** project
 
-> Carvel provides a set of reliable, single-purpose, composable tools that aid in your application
-> building, configuration, and deployment to Kubernetes.
+> Carvel provides a set of reliable, single-purpose, composable tools that aid in your application building, configuration, and deployment to Kubernetes.
 
 ---
 # Carvel tools
@@ -117,8 +117,8 @@ YAML-aware, equivalent to Helm & Kustomize
 
 Client-side + ConfigMap, equivalent to kubectl
 
+- **Wait rules**
 - **Group resources**
-- _Wait rules_
 - **ConfigMap and Secret versioning**
 - ...
 
@@ -155,18 +155,6 @@ Client-side + ConfigMap, equivalent to kubectl
 ---
 # Modify an existing app: ytt and kapp
 
-### kapp: "app"-aware replacement for kubectl
-
-Client-side + ConfigMap, equivalent to kubectl
-
-- _Group resources_
-- **Wait rules**
-- _ConfigMap and Secret versioning_
-- ...
-
----
-# Modify an existing app: ytt and kapp
-
 ```
 ┌───────────────────┐
 │  OpenID Provider  │
@@ -197,7 +185,6 @@ YAML-aware, equivalent to Helm & Kustomize
 - _Data values_
 - **Overlays**
 - ...
-
 
 ---
 # Note: YTT playground
