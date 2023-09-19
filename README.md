@@ -1,88 +1,78 @@
 # carvel-demo
 
-## Rough ideas
+This is the companion repo to the Carvel demo / talk originally given at Swiss Cloud Native day 2023
+under the original title
+[The Carvel toolsuite: build, configure, deploy k8s apps, following the Unix philosophy](https://cloudnativeday.ch/sessions/458712).
 
-Carvel tools mostly for Ops
+It showcases [Project Carvel](https://carvel.dev/) tools.
 
-Two tracks
-- dev: ytt-kapp
-- ops: ytt-kbld-imgpkg-kapp ... kapp-controller if time allows
+Demo is in the `demo/` directory, and slides in the ... `slides/` directory. I know.
 
-Vendir:
-- distribution of files
-- example with nginx ingress controller (??)
-  - mmmaayyyybe
+You can run the slides with the [slides](https://github.com/maaslalani/slides) program.
 
-Secretgen-controller:
-- it exists ... showcase certificate? secret import-export?
-  - only if time allows
-
-## Scenario ideas
-
-- Public vs private pages, using OAuth2
-
-Some pages will be behind OAuth2 proxy, other pages will be publicly accessible.
-
-1. YTT: data-values to setup pages / public & private
-  a. First, loop to create some public pages
-  b. Second, use overlays to extend oauth2-proxy setup
-2. KAPP: Wait rules and versioning for a config-map
-
-Setup:
-- OAuth2 Proxy + dex for OAuth2 support
-  - (Or even better: OAuth2 Proxy + Google for OAuth2 support)
-
-### Parked ideas
-
-- Showcase app
-
-1. YTT: same app with multiple domains, and a certificate if there is an HTTPs domain
-2. KAPP: Wait rules and versioning for a config-map
-
-What about using countries instead? Simple website with a page per country. But then data-values don't make much sense....
-
-## Slides
-
-- kitty + slides
-- Overview of Carvel
-- Use-case 1 - for developers
-  - Customize a deployment with data-values
-  - Deploy an app with `kapp`
-  - Customize an existing package with overlays
-- Use-case 2 - for operators
-  - pin images with `kbld`
-  - bundle with imgpkg
-  - relocate with imgpkg
-  - use bundle
-- Use-case 3: kapp-controller
-  - if time allows
+To run the demo, you need:
+- The Carvel toolsuite installed (see main website for install instructions)
+- [KinD](https://kind.sigs.k8s.io/) installed
+- Access to a registry
 
 ## Demo
 
-1. YTT templating
-  1. For loop
-  2. Function
-  3. Data-values
-  4. Data-values file
+> 🚨 WARNING: this README is only intended to give the commands that were run during the demo.
+> It is NOT intended to explain _why_ you should run those commands, or exactly _what_ they do.
 
-```yaml
-#@ load("@ytt:data", "data")
+### Setup
 
-#@ def config_map(name, content):
-apiVersion: v1
-kind: ConfigMap
-metadata:
-  name: #@ name
-  namespace: default
-data:
-  index.html: #@ content #@ end
+Setup a KinD cluster with all required dependencies with:
 
-#@ for app in data.values.apps:
---- #@ config_map(app.name, app.html)
-#@ end
+```bash
+./demo/cluster-setup/setup.sh
 ```
 
-2. kapp deploy - Versioned resources
+Ingresses in the cluster can be reached with `http://<INGRESS>.127.0.0.1.nip.io` ; you can test it
+out with `./demo/cluster-setup/test/test.sh`, which setups a small nginx, makes sure it's reachable,
+and then deletes it.
+
+>  NOTE: setup.sh will exercise `vendir` to download some manifests we want to deploy to the
+> cluster.
+
+>  NOTE: setup.sh will exercise `kapp` to deploy things, rather than raw `kubectl`.
+
+>  NOTE: setup.sh will exercise `ytt` overlays to change the CoreDNS configuration stored in a
+> ConfigMap, so that internal traffic is routed the same as external traffic.
+
+
+### YTT tempalting
+
+First, we showcase YTT's templating capabilities. Files involved:
+- `demo/application/app/app.yml`: the app itself. Take a look at it to view control-flow and
+  functions
+- `demo/application/app/values.yml`: default data values
+- `demo/application/app/values-schema.yml`: data-values schema
+
+Run the following to see the output:
+
+```bash
+ytt --file demo/application/app
+```
+
+You can also pass your own values, as such:
+
+```bash
+ytt --file demo/application/app --data-values-file demo/other-resources/my-custom-values.yml
+```
+
+### kapp deployments
+
+Deploy the above with kapp:
+
+
+```bash
+ytt --file demo/application/app \
+    --data-values-file demo/other-resources/my-custom-values.yml |
+        kapp deploy --app cloudnative --file - --yes
+```
+
+Notice that the `ConfigMap` in `demo/application/app/app.yml` is annotated with:
 
 ```yaml
   annotations:
@@ -90,188 +80,145 @@ data:
     kapp.k14s.io/versioned-keep-original: ""
 ```
 
-3. kapp deploy - wait-rule
-  1. Show app
-  2. Apply wait rule
+Any change to the ConfigMap will create a new "version" and update the Deployments depending on it
+accordingly.
 
-```yaml
-  annotations:
-    kapp.k14s.io/change-group: oauth2-proxy
-    kapp.k14s.io/change-rule: "upsert after upserting dex"
-```
+Once deployed, you should be able to see the `strawberries` website at the following address:
+http://strawberries.127.0.0.1.nip.io .
 
-4. YTT: overlay
-  1. Overlay app
-  2. Overlay CoreDNS configuration
-
-```yaml
-#@ load("@ytt:overlay", "overlay")
-
-#@overlay/match by=overlay.all
----
-metadata:
-  #@overlay/match missing_ok=True
-  annotations:
-    #@overlay/match missing_ok=True
-    added: true
-
-#@overlay/match by=overlay.subset({"kind": "ConfigMap"}), expects="1+"
----
-metadata:
-  namespace: changed-by-overlay
-```
-
-5. kbld
-  1. raw
-  2. with --imgpkg-lock-file
+"Inspect" the kapp app with:
 
 ```bash
-# resolve
-ytt --file application/infra --file app-private/oauth2-proxy-overlay.yml --data-values-file other-resources/my-custom-values.yml |
-  kbld -f - --imgpkg-lock-output application/.imgpkg/images.yml
-# pre-resolved
-ytt --file application/infra --file app-private/oauth2-proxy-overlay.yml --data-values-file other-resources/my-custom-values.yml |
-  kbld -f - --file application/.imgpkg/images.yml
+kapp inspect -a cloudnative
 ```
 
-6. imgpkg
-  1. push/pull
-  2. copy
+### ytt overlays
 
-imgpkg push/pull:
+We then deploy a more complex app, by taking some additional manifests and transforming them through
+overlays.
+
+- `demo/application/infra/*.yml`: the base "additional" app we want to modify. It has a `dex`
+  component that does not need modifying, and an `oauth2-proxy` we will change
+- `demo/application/app-private/oauth2-proxy-overlay.yml`: an overlay file to modify the base
+  `oauth2-proxy` deployment and config. It mounts the "apples" and "bananas" ConfigMaps in the
+  deployment, and updates the `oauth2-proxy-config` ConfigMap to serve static files.
+
+See it in practice with:
 
 ```bash
-imgpkg push --bundle docker.io/dgarnier963/carvel-demo:temp --file application/
-rm -rf ~/tmp/carvel-demo/*
-imgpkg pull --bundle docker.io/dgarnier963/carvel-demo:temp --output ~/tmp/carvel-demo
+ytt -f demo/application/infra \
+    --data-values-file demo/other-resources/my-custom-values.yml |
+    kapp cloudnative -a infra -f - --yes
 ```
 
-imgpkg copy:
+You can access the oauth2-proxy app at http://private.127.0.0.1.nip.io .
+
+Note: the above overrides the deployment in the previous chapter.
+
+Then apply the overlay, and redeploy everything:
 
 ```bash
-# push it
-imgpkg copy --bundle docker.io/dgarnier963/carvel-demo:temp --to-repo gcr.io/cf-identity-service-oak/dgarnier/carvel-demo
-open https://console.cloud.google.com/gcr/images/cf-identity-service-oak/global/dgarnier/carvel-demo?project=cf-identity-service-oak
-
-# pull it
-rm -rf ~/tmp/carvel-demo-bundle/*
-imgpkg pull --bundle gcr.io/cf-identity-service-oak/dgarnier/carvel-demo:temp --output
-~/tmp/carvel-bundle
+ytt -f demo/application/app \
+    -f demo/application/infra \
+    -f demo/application/app-private \
+    --data-values-file demo/other-resources/my-custom-values.yml |
+    kapp cloudnative -a infra -f - --yes
 ```
 
-imgpkg copy - tarball:
+You can then access both:
+- http://private.127.0.0.1.nip.io
+- http://strawberries.127.0.0.1.nip.io
+
+
+### kbld
+
+Leverage `kbld` and resolve images with:
 
 ```bash
-imgpkg copy --bundle docker.io/dgarnier963/carvel-demo:temp --to-tar ~/tmp/carvel-demo
+ytt -f demo/application/app \
+    -f demo/application/infra \
+    -f demo/application/app-private |
+    kbld -f -
 ```
 
-7. kapp-controller
-  1. App crd
-  2. package install
+Notice how images now have a specific sha.
 
+If you want to produce and use a lockfile, try:
+
+```bash
+# create lockfile
+ytt -f demo/application/app \
+    -f demo/application/infra \
+    -f demo/application/app-private |
+    kbld -f - --imgpkg-lock-output demo/application/.imgpkg/images.yml
+# resolve using the lockfile
+ytt -f demo/application/app \
+    -f demo/application/infra \
+    -f demo/application/app-private |
+    kbld -f - -f demo/application/.imgpkg/images.yml
 ```
+
+### imgpkg
+
+You can package up the files using:
+
+```bash
+imgpkg push --bundle <OCI-REGISTRY>/<REPOSITORY>:<TAG> --file demo/application
+```
+
+And pull them with:
+
+```bash
+imgpkg pull --bundle <OCI-REGISTRY>/<REPOSITORY>:<TAG> --output /tmp/my-imgpkg-bundle
+```
+
+You can also run a `copy`:
+
+```bash
+imgpkg copy --bundle <OCI-REGISTRY>/<REPOSITORY>:<TAG> --to-repo <TARGET-OCI-REGISTRY>/<REPOSITORY>
+```
+
+If you pull that bundle, you'll see that all images have been relocated.
+
+
+### kapp-controller
+
+> 🚨 Don't forget to delete the app deployed in the previous steps before trying the steps below
+
+```bash
+kapp delete -a cloudnative
+```
+
+GitOps with `kapp-controller`, by applying an `App` directly:
+
+```bash
+# delete previously deployed resources
+kapp delete -a cloudnative || true
+# deploy the App resource
+kapp deploy -a cloudnative -f demo/other-resources/app.yml
+```
+
+Or, alternatively, using `kctrl`:
+
+```bash
+# delete previously deployed resources
+kapp delete -a cloudnative || true
+
+# deploy the Package-Repository
+kapp deploy -a cloudnative -f demo/other-resources/package-repository.yml
+
+# explore the available packages
 kctrl package available list
-kctrl package available get -p carvel-demo.garnier.wf/1.0.0 --values-schema
-kctrl package install -i demo -p carvel-demo.garnier.wf -v 1.0.0 -n default  --dangerous-allow-use-of-shared-namespace --values-file other-resources/my-custom-values.yml
+
+# Install the demo package
+kctrl package install \
+    -i carvel-cloudnative \
+    -p carvel-demo.garnier.wf \
+    --version 1.0.0 \
+    --values-file demo/other-resources/my-custom-values.yml \
+    --dangerous-allow-use-of-shared-namespace
+
+# View the demo package
+kctrl package installed get -i carvel-cloudnative
 ```
-
-## Commands
-
-Setup:
-
-```bash
-# get vendir deps
-vendir sync --locked
-# install cluster stuff
-./cluster-setup/setup.sh
-```
-
-Carvel setup: infra
-
-```bash
-# deploy app
-kapp deploy --app infra --namespace default --file application/infra/
-# visit the "private" page to make sure it works
-open http://private.127.0.0.1.nip.io/
-```
-
-YTT:
-
-```bash
-ytt --file application/app | kapp deploy --app app --namespace default --file - --diff-changes --yes
-```
-
-YTT custom values:
-
-```bash
-ytt --file application/app --data-values-file other-resources/my-custom-values.yml |
-  kapp deploy --app app --namespace default --file - --diff-changes --yes
-```
-
-YTT overlays:
-
-```bash
-ytt \
-  --file application/infra \
-  --file application/app-private/oauth2-proxy-overlay.yml \
-  --data-values-file other-resources/my-custom-values.yml |
-    kapp deploy \
-      --app infra \
-      --namespace default \
-      --file - \
-      --diff-changes \
-      --yes
-```
-
-KBLD:
-
-```bash
-# resolve
-ytt --file application/infra --file app-private/oauth2-proxy-overlay.yml --data-values-file other-resources/my-custom-values.yml |
-  kbld -f - --imgpkg-lock-output application/.imgpkg/images.yml
-# pre-resolved
-ytt --file application/infra --file app-private/oauth2-proxy-overlay.yml --data-values-file other-resources/my-custom-values.yml |
-  kbld -f - --file application/.imgpkg/images.yml
-```
-
-imgpkg push/pull:
-
-```bash
-imgpkg push --bundle docker.io/dgarnier963/carvel-demo:temp --file application/
-rm -rf ~/tmp/carvel-demo/*
-imgpkg pull --bundle docker.io/dgarnier963/carvel-demo:temp --output ~/tmp/carvel-demo
-```
-
-imgpkg copy:
-
-```bash
-# push it
-imgpkg copy --bundle docker.io/dgarnier963/carvel-demo:temp --to-repo gcr.io/cf-identity-service-oak/dgarnier/carvel-demo
-open https://console.cloud.google.com/gcr/images/cf-identity-service-oak/global/dgarnier/carvel-demo?project=cf-identity-service-oak
-
-# pull it
-rm -rf ~/tmp/carvel-demo/*
-imgpkg pull --bundle gcr.io/cf-identity-service-oak/dgarnier/carvel-demo:temp --output ~/tmp/carvel-demo
-```
-
-imgpkg copy - tarball:
-
-```bash
-imgpkg copy --bundle docker.io/dgarnier963/carvel-demo:temp --to-tar ~/tmp/carvel-demo
-```
-
-kctrl
-
-```
-kctrl package available list
-kctrl package available get -p carvel-demo.garnier.wf/1.0.0 --values-schema
-kctrl package install -i demo -p carvel-demo.garnier.wf -v 1.0.0 -n default  --dangerous-allow-use-of-shared-namespace --values-file other-resources/my-custom-values.yml
-```
-
-## TODO
-
-- [x] add "versioned configmaps"
-- [x] styling
-- [ ] wait rules for oauth2-proxy
-- [ ] support Google instead of dex
 
