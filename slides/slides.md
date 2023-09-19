@@ -290,6 +290,7 @@ spec: # ...
 kind: App
 spec:
   cluster: # deploy to another cluster
+  serviceAccountName: # OR deploy to the same cluster, with ServiceAccount
 
   fetch: # where to pull files from
     - inline: # directly in the resource
