@@ -1,23 +1,38 @@
 ---
 apps:
-  - name: "fraises"
+  - name: "strawberries"
     html: |
-      <body>
-        <h1>Strawberries playing music together</h1>
-        <p>They're jamming!</p>
-      </body>
+      <html>
+        <head>
+          <meta charset="utf-8"/>
+        </head>
+        <body>
+          <h1>🍓 Strawberries playing music together</h1>
+          <p>They're jamming!</p>
+        </body>
+      </html>
     public: true
-  - name: "bananes"
+  - name: "bananas"
     html: |
-      <body>
-        <h1>This is Bananas!</h1>
-        <p>Seriously, this is bananas.</p>
-      </body>
+      <html>
+        <head>
+          <meta charset="utf-8"/>
+        </head>
+        <body>
+          <h1>🍌 This is Bananas!</h1>
+          <p>Seriously, this is bananas.</p>
+        </body>
+      </html>
     public: false
-  - name: "pommes"
+  - name: "apples"
     html: |
-      <body>
-        <h1>An apple a day keeps the doctor away</h1>
-        <p>But only if you aim correctly and throw it really hard.</p>
-      </body>
+      <html>
+        <head>
+          <meta charset="utf-8"/>
+        </head>
+        <body>
+          <h1>🍏 An apple a day keeps the doctor away</h1>
+          <p>But only if you aim correctly and throw it really hard.</p>
+        </body>
+      </html>
     public: false

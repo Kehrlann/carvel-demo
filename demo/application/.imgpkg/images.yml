@@ -1,0 +1,25 @@
+---
+apiVersion: imgpkg.carvel.dev/v1alpha1
+images:
+- annotations:
+    kbld.carvel.dev/id: bitnami/dex:2.37.0
+    kbld.carvel.dev/origins: |
+      - resolved:
+          tag: 2.37.0
+          url: bitnami/dex:2.37.0
+  image: index.docker.io/bitnami/dex@sha256:4eec89cb675d99080ee89d9762e92dd43757cd767050667590565f2cdb9881bf
+- annotations:
+    kbld.carvel.dev/id: bitnami/nginx:1.25.2
+    kbld.carvel.dev/origins: |
+      - resolved:
+          tag: 1.25.2
+          url: bitnami/nginx:1.25.2
+  image: index.docker.io/bitnami/nginx@sha256:4d6e3da704f5fdea16a0d028f4f874be777a4b3a63aabdef89d4475f5013612d
+- annotations:
+    kbld.carvel.dev/id: bitnami/oauth2-proxy:7.4.0
+    kbld.carvel.dev/origins: |
+      - resolved:
+          tag: 7.4.0
+          url: bitnami/oauth2-proxy:7.4.0
+  image: index.docker.io/bitnami/oauth2-proxy@sha256:8f4ba94bd5ade60e16960c165d4af3b7169f54547c95ef9fa5242191248dfc02
+kind: ImagesLock

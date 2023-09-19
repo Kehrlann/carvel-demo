@@ -11,12 +11,12 @@ spec:
   fetch:
     # Watch out: pulling the bundle may hit DockerHub rate limits
     #- imgpkgBundle:
-    #    image: docker.io/dgarnier963/carvel-demo:temp
+    #    image: docker.io/dgarnier963/carvel-demo:v1.0.0
     #  path: bundle
 
     - git:
         url: https://github.com/Kehrlann/carvel-demo.git
-        ref: main
+        ref: demo
         subPath: demo/application
       path: bundle
 
@@ -40,8 +40,6 @@ spec:
 
     # use kbld to resolve image references to use digests
     - kbld:
-        # lists paths to use explicitly (optional; v0.13.0+)
-        # - must be quoted when included with paths
         paths:
         - bundle/.imgpkg/images.yml
         - "-"
