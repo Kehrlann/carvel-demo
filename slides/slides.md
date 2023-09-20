@@ -105,7 +105,9 @@ One of  these for each of:
 
 ### ytt: YAML templating tool
 
-YAML-aware, equivalent to Helm & Kustomize
+YAML-aware, Kubernetes-agnostic, YAML templating and patching tool
+
+~ Equivalent to **Helm** & Kustomize
 
 - **Control flow (for, if)**
 - **Functions**
@@ -120,9 +122,10 @@ YAML-aware, equivalent to Helm & Kustomize
 
 Client-side + ConfigMap, equivalent to kubectl
 
-- **Wait rules**
-- **Group resources**
-- **ConfigMap and Secret versioning**
+- **Group resources** into "apps"
+- **Wait** for the resources to converge
+- _Custom ordering rules_
+- **Resource versioning**
 - ...
 
 ---
@@ -133,6 +136,22 @@ Client-side + ConfigMap, equivalent to kubectl
 1. **Modify an existing app**
 1. Make it prod-ready and publish it
 1. GitOps and Package Managemen
+
+---
+# Modify an existing app: ytt and kapp
+
+### ytt: YAML templating tool
+
+YAML-aware, Kubernetes-agnostic, YAML templating and patching tool
+
+~ Equivalent to Helm & **Kustomize**
+
+
+- _Control flow (for, if)_
+- _Functions_
+- _Data values_
+- **Overlays**
+- ...
 
 ---
 # Modify an existing app: ytt and kapp
@@ -175,19 +194,6 @@ Client-side + ConfigMap, equivalent to kubectl
       │     config.cfg: "..." │     │                       │
       └───────────────────────┘     └───────────────────────┘
 ```
-
----
-# Modify an existing app: ytt and kapp
-
-### ytt: YAML templating tool
-
-YAML-aware, equivalent to Helm & Kustomize
-
-- _Control flow (for, if)_
-- _Functions_
-- _Data values_
-- **Overlays**
-- ...
 
 ---
 # Note: YTT playground
