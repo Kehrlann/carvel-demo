@@ -26,15 +26,18 @@ Find me online!
 
 - 🌍 `https://garnier.wf/`
 - 🐦 @Kehrlann
+- 🐘 @kehrlann@hachyderm.io
 - 📩 `dgarnier@vmware.com`
 
 
 ---
 # Disclaimer 📄
 
-🔭 This is an overview, very partial
+🔭   This is an overview, very partial
 
-🧑‍💻I'm more of a "Developer", not much of an "Operator"
+🏎️💨 Too much content, this is going to go fast (sorry)
+
+🧑‍💻 I'm more of a "Developer", not much of an "Operator"
 
 ---
 # The plan
@@ -268,10 +271,11 @@ See [imgpkg / nested bundles](https://carvel.dev/imgpkg/docs/v0.37.x/resources//
 ### kapp-controller
 
 GitOps through composition:
-- **cluster** - which cluster to target
 - **fetch** - where to get manifests from
 - **template** - how to change those manifests
 - **deploy** - how to deploy
+- **cluster** - where to deploy
+  - OR **serviceAccountName** - which permissions
 
 ```yaml
 apiVersion: kappctrl.k14s.io/v1alpha1
